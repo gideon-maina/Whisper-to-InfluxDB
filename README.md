@@ -50,6 +50,7 @@ The metric is then sent to the InfluxDB server.
 Example Output
 ==============
 Directory path and contents
+```bash
 	/home/user/whisper/
 		── whisper
 	│   ├── host1
@@ -57,6 +58,7 @@ Directory path and contents
 	│   │       ├── avg1.wsp
 	│   │       ├── avg15.wsp
 	│   │       └── avg5.wsp
+```
 
 Output from the script (Also sends the dat to InfluxDB)
 	host1.cpuload.avg1
