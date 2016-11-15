@@ -8,8 +8,8 @@ import graphitesend
 
 
 WHISPER_DIR = '/opt/graphite/whisper/'
-WHISPER_INFO = '//anaconda/bin/whisper-fetch.py'
-#WHISPER_INFO = 'whisper-fetch' # the whisper info command
+WHISPER_FETCH = 'whisper-fetch.py' # The whisper fetch command
+
 FROM = '1478093280'
 UNTIL = '1478094280'
 
@@ -20,14 +20,14 @@ GRAPHITE_PORT = 2013
 def search_whisper_files(whisper_folder):
     """
     Given a directory return all the whisper files in the directory.
-    :param directory:
-    :return:
+    :param directory: The whisper root directory
+    :return: All .wsp files , full paths in all the sub directories
     """
     whisper_files = []
     for root, directories, files in os.walk(whisper_folder):
-        for a_file in files:
-            if a_file.endswith('.wsp'):
-                whisper_files.append(os.path.join(root, a_file))
+        for whisper_file in files:
+            if whisper_file.endswith('.wsp'):
+                whisper_files.append(os.path.join(root, whisper_file))
 
     return whisper_files
 
@@ -35,11 +35,13 @@ def search_whisper_files(whisper_folder):
 def read_whisper_file(whisper_file, from_time, until_time):
     """
     Given a whisper path, read it and return the data within a given time.
-    :param whisper_file:
-    :return:
+    :param whisper_file: a given full path to a whisper file
+    :return: data in the whisper file within the specfied time range.
+            the data is a dict with time_stamp as key and metric value as
+            the value.
     """
     command = [
-        WHISPER_INFO, '--until='+until_time, '--from='+from_time,
+        WHISPER_FETCH, '--until='+until_time, '--from='+from_time,
         whisper_file,
     ]
     run_command = subprocess.Popen(command, stdout=subprocess.PIPE)
@@ -60,9 +62,10 @@ def read_whisper_file(whisper_file, from_time, until_time):
 def main():
     """
     Loop through a directory, get all the .wsp files,
-    Do a whisper-info on them
+    Do a whisper-fetch on them and return the data.
     Send the data using graphitesend with the directory path as the
-    measurement. InfluxDB takes in the data as if it was graphite.
+    measurement. 
+    InfluxDB takes in the data as if it was graphite.
     """
     parser = argparse.ArgumentParser(
         description='Whisper file to InfluxDB migration script, '
