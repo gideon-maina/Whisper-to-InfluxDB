@@ -61,9 +61,11 @@ Directory path and contents
 ```
 
 Output from the script (Also sends the dat to InfluxDB)
+```bash
 	host1.cpuload.avg1
 	host1.cpuload.avg15
 	host1.cpuload.avg5
+```
 
 TODO
 ====
