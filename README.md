@@ -1,10 +1,33 @@
 Whisper-to-InfluxDB
 ===================
 
-### script searches whisper files, reads them and creates datapoints in influxDB.
+The script searches for all whisper files, reads them and creates datapoints in InfluxDB.
 
-the script is a early proof of concept and might be using bulk commits or threading in the future.
-the performance is __not mindblowing__ at the moment.
+How it works
+============
+InfluxDB supports the graphite inout protocol and can be enabled in the InfluxDB config.
+Here is a section of the influxdb.conf, showing how graphite input can be accepted
+```bash
+...
+[[graphite]]
+  enabled = true
+  database = "graphite"
+  bind-address = ":2003"
+  protocol = "tcp"
+  consistency-level = "one"
+ ...
+ ```
+
+If the influxDB service is running with the above graphite input enabled, then this script will work.
+
+Requirements
+============
+* You have InfluxDB running with graphite plugin enabled.
+* Access to the InfluxDB server
+
+Usage
+=====
+Expects to called in the command prompt with the correct arguments and the whisper directory path.
 
 
 ```bash
@@ -15,6 +38,17 @@ usage: whisper-to-influxdb-with-plugin.py [-h] [-graphite_host graphite_host]
                                           path
 ```
                               
-the script will parse the given path recursively and search for whisper files.
-the found whisper files are being read and None values are omitted.
+The script will go through the given path recursively and search for all whisper files.
+
+The found whisper files are read and None values are omitted.
+
+Then path of the whisper file is 'split' to build a similar long name to be used as the 
+measurement in InfluxDB.
+
+The metric is then sent to the InfluxDB server.
+
+TODO
+====
+* Improve on performance.
+* Test on large whisper data sets.
 
