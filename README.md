@@ -47,6 +47,22 @@ measurement in InfluxDB.
 
 The metric is then sent to the InfluxDB server.
 
+Example Output
+==============
+Directory path and contents
+	/home/user/whisper/
+		── whisper
+	│   ├── host1
+	│   │   └── cpuload
+	│   │       ├── avg1.wsp
+	│   │       ├── avg15.wsp
+	│   │       └── avg5.wsp
+
+Output from the script (Also sends the dat to InfluxDB)
+	host1.cpuload.avg1
+	host1.cpuload.avg15
+	host1.cpuload.avg5
+
 TODO
 ====
 * Improve on performance.

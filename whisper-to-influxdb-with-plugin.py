@@ -104,6 +104,7 @@ def main():
     for whisper_file in search_whisper_files(args.path):
         metric = whisper_file.split('/whisper/')[1].split('.wsp')[0].replace(
             '/', '.')
+        print metric
         data = read_whisper_file(whisper_file, args.fromwhen, args.untilwhen)
         for time_stamo, value in data.iteritems():
             g.send(metric=metric, value=value, timestamp=float(time_stamo))
