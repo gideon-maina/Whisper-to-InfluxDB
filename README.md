@@ -5,7 +5,7 @@ The script searches for all whisper files, reads them and creates datapoints in 
 
 How it works
 ============
-InfluxDB supports the graphite inout protocol and can be enabled in the InfluxDB config.
+InfluxDB supports the graphite input protocol and can be enabled in the InfluxDB config.
 Here is a section of the influxdb.conf, showing how graphite input can be accepted
 ```bash
 ...
@@ -31,8 +31,9 @@ Expects to called in the command prompt with the correct arguments and the whisp
 
 
 ```bash
-usage: whisper-to-influxdb-with-plugin.py [-h] [-graphite_host graphite_host]
-                                          [-graphite_port graphite_port]
+python whisper-to-influxdb-with-plugin.py
+usage: whisper-to-influxdb-with-plugin.py [-h] [-influxdb_host influxdb_host]
+                                          [-influxdb_port influxdb_port graphite port]
                                           [-fromwhen from when in unix epoch]
                                           [-untilwhen until when in unix epoch]
                                           path
@@ -60,7 +61,7 @@ Directory path and contents
 	│   │       └── avg5.wsp
 ```
 
-Output from the script (Also sends the dat to InfluxDB)
+Output from the script (Also sends the data to InfluxDB)
 ```bash
 	host1.cpuload.avg1
 	host1.cpuload.avg15

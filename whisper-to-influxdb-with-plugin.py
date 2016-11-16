@@ -13,8 +13,8 @@ WHISPER_FETCH = 'whisper-fetch.py' # The whisper fetch command
 FROM = '1478093280'
 UNTIL = '1478094280'
 
-GRAPHITE_SERVER = 'localhost'
-GRAPHITE_PORT = 2013
+INFLUXDB_HOST = 'localhost'
+INFLUXDB_PORT = 2013
 
 
 def search_whisper_files(whisper_folder):
@@ -69,21 +69,21 @@ def main():
     """
     parser = argparse.ArgumentParser(
         description='Whisper file to InfluxDB migration script, '
-                    'using the graphite influxdb plugin.'
-                    'assumes that influxdb is running with graphite plugin '
+                    'using the graphite influxdb plugin. '
+                    'Assumes that influxdb is running with graphite plugin '
                     'enabled')
 
     parser.add_argument('path', help='Path to the root whisper folder')
     parser.add_argument(
-        '-graphite_host',
-        default=GRAPHITE_SERVER,
-        metavar='graphite_host',
-        help='Graphite address')
+        '-influxdb_host',
+        default=INFLUXDB_HOST,
+        metavar='influxdb_host',
+        help='InfluxDB address')
     parser.add_argument(
-        '-graphite_port',
-        default=GRAPHITE_PORT,
-        metavar='graphite_port',
-        help='Graphite port')
+        '-influxdb_port',
+        default=INFLUXDB_PORT,
+        metavar='influxdb_port graphite port',
+        help='Influxdb graphite port')
     parser.add_argument(
         '-fromwhen',
         default=FROM,
@@ -100,8 +100,8 @@ def main():
     g = graphitesend.init(
         prefix='migrated',
         system_name='',
-        graphite_server=args.graphite_host,
-        graphite_port=int(args.graphite_port)
+        influxdb_host=args.influxdb_host,
+        influxdb_port=int(args.influxdb_port)
     )
 
     for whisper_file in search_whisper_files(args.path):
@@ -109,8 +109,8 @@ def main():
             '/', '.')
         print metric
         data = read_whisper_file(whisper_file, args.fromwhen, args.untilwhen)
-        for time_stamo, value in data.iteritems():
-            g.send(metric=metric, value=value, timestamp=float(time_stamo))
+        for time_stamp, value in data.iteritems():
+            g.send(metric=metric, value=value, timestamp=float(time_stamp))
             # Sleep for 1 second, to give influxDB time to write the points
             time.sleep(1)
 
