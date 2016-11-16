@@ -1,9 +1,11 @@
 import argparse
+import multiprocessing
 import os
 import subprocess
 import time
 
 import graphitesend
+from joblib import Parallel, delayed
 
 WHISPER_DIR = '/opt/graphite/whisper/'
 WHISPER_FETCH = 'whisper-fetch.py'  # The whisper fetch command
@@ -28,6 +30,13 @@ def search_whisper_files(whisper_folder):
                 whisper_files.append(os.path.join(root, whisper_file))
 
     return whisper_files
+
+
+def get_metric_name(whisper_file):
+    metric_name = whisper_file.split('/whisper/')[1].split('.wsp')[0].replace(
+        '/', '.')
+
+    return metric_name
 
 
 def read_whisper_file(whisper_file, from_time, until_time):
@@ -59,12 +68,31 @@ def read_whisper_file(whisper_file, from_time, until_time):
     return data
 
 
-def main():
+def send_metrics(whisper_file, time_stamp, value, args):
     """
-    Loop through a directory, get all the .wsp files,
-    Do a whisper-fetch on them and return the data.
-    Send the data using graphitesend with the directory path as the
-    measurement.InfluxDB takes in the data as if it was graphite.
+    Send a given whisper file's data to InfluxDB
+    :param whisper_file: The compelte path to the whisper file.
+    :param time_stamp:  The time stamp for value in unix epoch
+    :param value: The value of the metric at time timestamp
+    :param args: the configparser object
+    """
+    metric = get_metric_name(whisper_file)
+    print metric, time_stamp, value
+    g = graphitesend.init(
+        prefix='migrated',
+        system_name='',
+        graphite_server=args.influxdb_host,
+        graphite_port=int(args.influxdb_port)
+    )
+    g.send(metric=metric, value=value, timestamp=float(time_stamp))
+    # Sleep for 1 second, to give influxDB time to write the points
+    time.sleep(1)
+
+
+def get_args():
+    """
+    Get command line arguments and pass them on.
+    :return: configparser object
     """
     parser = argparse.ArgumentParser(
         description='Whisper file to InfluxDB migration script, '
@@ -94,25 +122,27 @@ def main():
         metavar='until when in unix epoch',
         help='Upto when, to transfer data')
 
-    args = parser.parse_args()
+    return parser.parse_args()
 
-    g = graphitesend.init(
-        prefix='migrated',
-        system_name='',
-        graphite_server=args.influxdb_host,
-        graphite_port=int(args.influxdb_port)
-    )
 
-    for whisper_file in search_whisper_files(args.path):
-        metric = whisper_file.split('/whisper/')[1].split('.wsp')[0].replace(
-            '/', '.')
-        print metric
-        data = read_whisper_file(whisper_file, args.fromwhen, args.untilwhen)
-        for time_stamp, value in data.iteritems():
-            g.send(metric=metric, value=value, timestamp=float(time_stamp))
+def main():
+    """
+    Loop through a directory, get all the .wsp files,
+    Do a whisper-fetch on them and return the data.
+    Send the data using graphitesend with the directory path as the
+    measurement.InfluxDB takes in the data as if it was graphite.
+    """
+    cpus = multiprocessing.cpu_count()
+    parallel = Parallel(n_jobs=cpus)
 
-        # Sleep for 1 second, to give influxDB time to write the points
-        time.sleep(1)
+    args = get_args()
+
+    parallel(delayed(send_metrics)(whisper_file, time_stamp, value, args)
+             for whisper_file in search_whisper_files(args.path)
+             for time_stamp, value in
+             read_whisper_file(whisper_file, args.fromwhen,
+                               args.untilwhen).iteritems()
+             )
 
 
 if __name__ == "__main__":
