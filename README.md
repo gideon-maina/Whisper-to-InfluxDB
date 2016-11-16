@@ -71,7 +71,7 @@ The following will be the measurements.
 	host1.cpuload.avg5
 ```
 
-Current Performnce Enhacement
+Current Performance Enhacement
 =============================
 Uses the joblib library to help in looping through the data and send to InfluxDB.
 TODO
