@@ -1,14 +1,12 @@
-import whisper
 import argparse
 import os
-import time
 import subprocess
 import time
+
 import graphitesend
 
-
 WHISPER_DIR = '/opt/graphite/whisper/'
-WHISPER_FETCH = 'whisper-fetch.py' # The whisper fetch command
+WHISPER_FETCH = 'whisper-fetch.py'  # The whisper fetch command
 
 FROM = '1478093280'
 UNTIL = '1478094280'
@@ -41,7 +39,7 @@ def read_whisper_file(whisper_file, from_time, until_time):
             the value.
     """
     command = [
-        WHISPER_FETCH, '--until='+until_time, '--from='+from_time,
+        WHISPER_FETCH, '--until=' + until_time, '--from=' + from_time,
         whisper_file,
     ]
     run_command = subprocess.Popen(command, stdout=subprocess.PIPE)
