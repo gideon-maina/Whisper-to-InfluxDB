@@ -18,8 +18,8 @@ INFLUXDB_PORT = 2013
 def search_whisper_files(whisper_folder):
     """
     Given a directory return all the whisper files in the directory.
-    :param whisper_folder: The whisper root directory
-    :return: All .wsp files , full paths in all the sub directories
+    :param whisper_folder: The whisper root directory.
+    :return: All .wsp files , full paths in all the sub directories.
     """
     whisper_files = []
     for root, directories, files in os.walk(whisper_folder):
