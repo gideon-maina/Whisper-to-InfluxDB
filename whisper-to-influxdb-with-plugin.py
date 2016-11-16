@@ -112,7 +112,7 @@ def get_args():
         metavar='influxdb_port graphite port',
         help='Influxdb graphite port')
     parser.add_argument(
-        '-from',
+        '-fromwhen',
         default=FROM,
         metavar='from when in unix epoch',
         help='From when, to transfer data')
@@ -141,7 +141,7 @@ def main():
              for whisper_file in search_whisper_files(args.path)
              for time_stamp, value in
              read_whisper_file(whisper_file, args.fromwhen,
-                               args.untilwhen).iteritems()
+                               args.until).iteritems()
              )
 
 
