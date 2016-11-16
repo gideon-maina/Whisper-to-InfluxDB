@@ -34,11 +34,11 @@ Expects to called in the command prompt with the correct arguments and the whisp
 python whisper-to-influxdb-with-plugin.py
 usage: whisper-to-influxdb-with-plugin.py [-h] [-influxdb_host influxdb_host]
                                           [-influxdb_port influxdb_port graphite port]
-                                          [-from from when in unix epoch]
+                                          [-fromwhen from when in unix epoch]
                                           [-until until when in unix epoch]
                                           path
                                           
-python whisper-to-influxdb-with-plugin.py -influxdb_host=localhost -influxdb_port=2013 -from=1470009600 -until=1479081600 /opt/graphite/whisper/
+python whisper-to-influxdb-with-plugin.py -influxdb_host=localhost -influxdb_port=2013 -fromwhen=1470009600 -until=1479081600 /opt/graphite/whisper/
 ```
                               
 The script will go through the given path recursively and search for all whisper files.
