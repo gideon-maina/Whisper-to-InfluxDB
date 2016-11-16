@@ -112,12 +112,12 @@ def get_args():
         metavar='influxdb_port graphite port',
         help='Influxdb graphite port')
     parser.add_argument(
-        '-fromwhen',
+        '-from',
         default=FROM,
         metavar='from when in unix epoch',
         help='From when, to transfer data')
     parser.add_argument(
-        '-untilwhen',
+        '-until',
         default=UNTIL,
         metavar='until when in unix epoch',
         help='Upto when, to transfer data')
