@@ -99,8 +99,8 @@ def main():
     g = graphitesend.init(
         prefix='migrated',
         system_name='',
-        influxdb_host=args.influxdb_host,
-        influxdb_port=int(args.influxdb_port)
+        graphite_host=args.influxdb_host,
+        graphite_port=int(args.influxdb_port)
     )
 
     for whisper_file in search_whisper_files(args.path):
