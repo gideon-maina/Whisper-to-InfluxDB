@@ -37,6 +37,8 @@ usage: whisper-to-influxdb-with-plugin.py [-h] [-influxdb_host influxdb_host]
                                           [-fromwhen from when in unix epoch]
                                           [-untilwhen until when in unix epoch]
                                           path
+                                          
+python whisper-to-influxdb-with-plugin.py -influxdb_host=localhost -influxdb_port=2013 -fromwhen=1470009600 -untilwhen=1479081600 /opt/graphite/whisper/
 ```
                               
 The script will go through the given path recursively and search for all whisper files.
@@ -62,6 +64,7 @@ Directory path and contents
 ```
 
 Output from the script (Also sends the data to InfluxDB)
+The following will be the measurements.
 ```bash
 	host1.cpuload.avg1
 	host1.cpuload.avg15
