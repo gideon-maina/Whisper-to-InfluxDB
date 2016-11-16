@@ -38,7 +38,7 @@ usage: whisper-to-influxdb-with-plugin.py [-h] [-influxdb_host influxdb_host]
                                           [-until until when in unix epoch]
                                           path
                                           
-python whisper-to-influxdb-with-plugin.py -influxdb_host=localhost -influxdb_port=2013 -fromwhen=1470009600 -untilwhen=1479081600 /opt/graphite/whisper/
+python whisper-to-influxdb-with-plugin.py -influxdb_host=localhost -influxdb_port=2013 -from=1470009600 -until=1479081600 /opt/graphite/whisper/
 ```
                               
 The script will go through the given path recursively and search for all whisper files.
