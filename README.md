@@ -71,8 +71,10 @@ The following will be the measurements.
 	host1.cpuload.avg5
 ```
 
+Current Performnce Enhacement
+=============================
+Uses the joblib library to help in looping through the data and send to InfluxDB.
 TODO
 ====
-* Improve on performance.
 * Test on large whisper data sets.
 
