@@ -18,7 +18,7 @@ INFLUXDB_PORT = 2013
 def search_whisper_files(whisper_folder):
     """
     Given a directory return all the whisper files in the directory.
-    :param directory: The whisper root directory
+    :param whisper_folder: The whisper root directory
     :return: All .wsp files , full paths in all the sub directories
     """
     whisper_files = []
@@ -33,7 +33,9 @@ def search_whisper_files(whisper_folder):
 def read_whisper_file(whisper_file, from_time, until_time):
     """
     Given a whisper path, read it and return the data within a given time.
-    :param whisper_file: a given full path to a whisper file
+    :param whisper_file: a given full path to a whisper file.
+    :param from_time: from when to read the stored metrics (in unix epoch).
+    :param until_time: upto when  to read the stored metrics (in unix epoch).
     :return: data in the whisper file within the specfied time range.
             the data is a dict with time_stamp as key and metric value as
             the value.
@@ -62,8 +64,7 @@ def main():
     Loop through a directory, get all the .wsp files,
     Do a whisper-fetch on them and return the data.
     Send the data using graphitesend with the directory path as the
-    measurement. 
-    InfluxDB takes in the data as if it was graphite.
+    measurement.InfluxDB takes in the data as if it was graphite.
     """
     parser = argparse.ArgumentParser(
         description='Whisper file to InfluxDB migration script, '
