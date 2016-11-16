@@ -99,7 +99,7 @@ def main():
     g = graphitesend.init(
         prefix='migrated',
         system_name='',
-        graphite_host=args.influxdb_host,
+        graphite_server=args.influxdb_host,
         graphite_port=int(args.influxdb_port)
     )
 
@@ -110,8 +110,9 @@ def main():
         data = read_whisper_file(whisper_file, args.fromwhen, args.untilwhen)
         for time_stamp, value in data.iteritems():
             g.send(metric=metric, value=value, timestamp=float(time_stamp))
-            # Sleep for 1 second, to give influxDB time to write the points
-            time.sleep(1)
+
+        # Sleep for 1 second, to give influxDB time to write the points
+        time.sleep(1)
 
 
 if __name__ == "__main__":
