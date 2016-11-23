@@ -8,14 +8,6 @@ import graphitesend
 from joblib import Parallel, delayed
 
 WHISPER_DIR = '/opt/graphite/whisper/'
-WHISPER_FETCH = 'whisper-fetch.py'  # The whisper fetch command
-
-FROM = '1478093280'
-UNTIL = '1478094280'
-
-INFLUXDB_HOST = 'localhost'
-INFLUXDB_PORT = 2013
-
 
 def search_whisper_files(whisper_folder):
     """
@@ -23,13 +15,10 @@ def search_whisper_files(whisper_folder):
     :param whisper_folder: The whisper root directory.
     :return: All .wsp files , full paths in all the sub directories.
     """
-    whisper_files = []
     for root, directories, files in os.walk(whisper_folder):
         for whisper_file in files:
             if whisper_file.endswith('.wsp'):
-                whisper_files.append(os.path.join(root, whisper_file))
-
-    return whisper_files
+                yield os.path.join(root, whisper_file)
 
 
 def get_metric_name(whisper_file):
@@ -49,6 +38,8 @@ def read_whisper_file(whisper_file, from_time, until_time):
             the data is a dict with time_stamp as key and metric value as
             the value.
     """
+    WHISPER_FETCH = 'whisper-fetch.py'  # The whisper fetch command
+
     command = [
         WHISPER_FETCH, '--until=' + until_time, '--from=' + from_time,
         whisper_file,
@@ -58,9 +49,10 @@ def read_whisper_file(whisper_file, from_time, until_time):
 
     data = {}
     for line in stdout.split('\n'):
+        contents = line.split()
         try:
-            time, value = line.split()[0], line.split()[1]
-        except:
+            time, value = contents[0], contents[1]
+        except IndexError:
             continue
         if value != 'None':
             data[time] = float(value)
@@ -77,16 +69,19 @@ def send_metrics(whisper_file, time_stamp, value, args):
     :param args: the configparser object
     """
     metric = get_metric_name(whisper_file)
-    print metric, time_stamp, value
+    system_name = metric.split('.', 1)[0]
+    metric_name = metric.split('.', 1)[1]
+
+    print metric_name
     g = graphitesend.init(
-        prefix='migrated',
-        system_name='',
+        prefix='',
+        system_name=system_name,
         graphite_server=args.influxdb_host,
         graphite_port=int(args.influxdb_port)
     )
-    g.send(metric=metric, value=value, timestamp=float(time_stamp))
-    # Sleep for 1 second, to give influxDB time to write the points
-    time.sleep(1)
+    g.send(metric=metric_name, value=value, timestamp=float(time_stamp))
+    # Sleep for 50 millisecond, to give influxDB time to write the points
+    time.sleep(0.02)
 
 
 def get_args():
@@ -103,22 +98,18 @@ def get_args():
     parser.add_argument('path', help='Path to the root whisper folder')
     parser.add_argument(
         '-influxdb_host',
-        default=INFLUXDB_HOST,
         metavar='influxdb_host',
         help='InfluxDB address')
     parser.add_argument(
         '-influxdb_port',
-        default=INFLUXDB_PORT,
         metavar='influxdb_port graphite port',
         help='Influxdb graphite port')
     parser.add_argument(
         '-fromwhen',
-        default=FROM,
         metavar='from when in unix epoch',
         help='From when, to transfer data')
     parser.add_argument(
         '-until',
-        default=UNTIL,
         metavar='until when in unix epoch',
         help='Upto when, to transfer data')
 
